@@ -45,13 +45,12 @@ def set_alias(shell):
                 'manually')
     else:
         print("Can't find $SHELL or shell run commands. Can't set alias")
-# end set_alias()
 
 find_shell = environ.get('SHELL')
 set_alias(find_shell)
+# end set_alias()
 
-# Open journal in default editor, otherwise open in vim. Have this func take in
-# editor?
+# Open journal in default editor, otherwise open in nvim.
 def open_in_pref_editor():
     pref_editor = environ.get('EDITOR')
     if environ.get('EDITOR') == None:
