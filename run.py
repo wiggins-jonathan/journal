@@ -1,18 +1,54 @@
 #!/usr/bin/env python3
 
-from os       import system, environ
-from os.path  import getmtime, dirname, isfile
-from datetime import datetime
+# Refactor some of this to use pathlib module?
+from os         import system, environ
+from os.path    import getmtime, dirname, isfile, expanduser, abspath
+from datetime   import datetime
 
-# Get absolute path of this script & journal file
-dir_path      = dirname(__file__)
-journal_file  = f'{dir_path}/journal.md'
+# Get paths of this script & journal file
+rel_path        = dirname(__file__)
+abs_path        = abspath(__file__)
+journal_file    = f'{rel_path}/journal.md'
 
-## Create journal file if not already created.
+# Create journal file if not already created.
 if isfile(journal_file) == False:
     print('Journal file not found. Creating...')
     with open(journal_file, 'x') as f:
         f.write('')
+
+# Search bashrc for alias 'j'. If it doesn't exist, create it.
+def set_alias(shell):
+    pattern     = "alias j='"
+    home_folder = expanduser('~')
+    bashrc      = abspath(f'{home_folder}/.bashrc')
+    zshrc       = abspath(f'{home_folder}/.zshrc')
+
+    #zsh
+    if shell == '/bin/zsh' and isfile(zshrc) == True:
+        with open(zshrc, 'a+') as f:
+            if pattern not in f.read():
+                f.write(pattern + zshrc)
+                print(f'Alias set in {zshrc}. Source or restart zsh & hit "j" '
+                'to start program')
+            else:
+                print("'j' is already an alias. You'll have to run the program "
+                'manually')
+    #bash
+    elif shell == '/bin/bash' and isfile(bashrc) == True:
+        with open(bashrc, 'a+') as f:
+            if pattern not in f.read():
+                f.write(pattern + bashrc)
+                print(f'Alias set in {bashrc}. Source or restart bash & hit "j" '
+                'to start program')
+            else:
+                print("'j' is already an alias. You'll have to run the program "
+                'manually')
+    else:
+        print("Can't find $SHELL or shell run commands. Can't set alias")
+# end set_alias()
+
+find_shell = environ.get('SHELL')
+set_alias(find_shell)
 
 # Open journal in default editor, otherwise open in vim. Have this func take in
 # editor?
@@ -22,9 +58,6 @@ def open_in_pref_editor():
         system(f'nvim + {journal_file}')
     else:
         system(pref_editor + journal_file)
-
-# Search bashrc for alias 'j'. If it doesn't exist, create it.
-alias = f'alias j={dir_path}/run.py'
 
 # Get today's date & compare it to the last mod date of journal_file
 pretty_date   = '%A, %e %B, %Y'
