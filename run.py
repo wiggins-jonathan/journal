@@ -10,12 +10,6 @@ rel_path        = dirname(__file__)
 abs_path        = abspath(__file__)
 journal_file    = f'{rel_path}/journal.md'
 
-# Create journal file if not already created.
-if isfile(journal_file) == False:
-    print('Journal file not found. Creating...')
-    with open(journal_file, 'x') as f:
-        f.write('')
-
 # Search bashrc for alias 'j'. If it doesn't exist, create it.
 def set_alias(shell):
     pattern     = "alias j='"
@@ -45,9 +39,6 @@ def set_alias(shell):
                 'manually')
     else:
         print("Can't find $SHELL or shell run commands. Can't set alias")
-
-find_shell = environ.get('SHELL')
-set_alias(find_shell)
 # end set_alias()
 
 # Open journal in default editor, otherwise open in nvim.
@@ -57,6 +48,14 @@ def open_in_pref_editor():
         system(f'nvim + {journal_file}')
     else:
         system(pref_editor + journal_file)
+
+# Create journal file if not already created & set alias if not existing.
+if isfile(journal_file) == False:
+    print('Journal file not found. Creating...')
+    with open(journal_file, 'x') as f:
+        f.write('')
+    find_shell = environ.get('SHELL')
+    set_alias(find_shell)
 
 # Get today's date & compare it to the last mod date of journal_file
 pretty_date   = '%A, %e %B, %Y'
