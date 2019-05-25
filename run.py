@@ -25,7 +25,7 @@ def set_alias(shell):
 
     #zsh
     if shell == '/bin/zsh' and isfile(zshrc) == True:
-        with open(zshrc, 'a+') as f:
+        with open(zshrc, 'r+') as f:
             if pattern not in f.read():
                 f.write(pattern + f"{zshrc}'")
                 print(f'Alias set in {zshrc}. Source or restart zsh & hit "j" '
@@ -35,7 +35,7 @@ def set_alias(shell):
                 'manually')
     #bash
     elif shell == '/bin/bash' and isfile(bashrc) == True:
-        with open(bashrc, 'a+') as f:
+        with open(bashrc, 'r+') as f:
             if pattern not in f.read():
                 f.write(pattern + f"{bashrc}'")
                 print(f'Alias set in {bashrc}. Source or restart bash & hit "j" '
