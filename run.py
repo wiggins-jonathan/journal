@@ -49,19 +49,19 @@ def open_in_pref_editor():
     else:
         system(pref_editor + journal_file)
 
+pretty_date   = '%A, %e %B, %Y'
+today_date    = (datetime.now().strftime(pretty_date))
+
 # Create journal file if not already created & set alias if not existing.
 if isfile(journal_file) == False:
     print('Journal file not found. Creating...')
     with open(journal_file, 'x') as f:
-        f.write('')
+        f.write(f'# {today_date}')
     find_shell = environ.get('SHELL')
     set_alias(find_shell)
 
 # Get today's date & compare it to the last mod date of journal_file
-pretty_date   = '%A, %e %B, %Y'
-today_date    = (datetime.now().strftime(pretty_date))
 mod_date      = datetime.fromtimestamp(getmtime(journal_file)).strftime(pretty_date)
-
 if today_date == mod_date:
     print("Continuing today's entry...")
     open_in_pref_editor()
