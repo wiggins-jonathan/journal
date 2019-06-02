@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 
-# Refactor some of this to use pathlib module?
 from os         import system, environ
-from os.path    import getmtime, dirname, isfile, expanduser, abspath
+from pathlib    import Path as path
 from datetime   import datetime
 
 # Get paths of this script & journal file
-rel_path        = dirname(__file__)
-abs_path        = abspath(__file__)
-journal_file    = f'{rel_path}/journal.md'
+rel_path        = path(__file__).parent
+abs_path        = path(__file__).resolve()
+journal_file    = path(f'{rel_path}/journal.md')
 
 # Search bashrc for alias 'j'. If it doesn't exist, create it.
 def set_alias(shell):
     pattern     = "alias j='"
-    home_folder = expanduser('~')
-    bashrc      = abspath(f'{home_folder}/.bashrc')
-    zshrc       = abspath(f'{home_folder}/.zshrc')
+    home_folder = path('~').expanduser()
+    bashrc      = path(f'{home_folder}/.bashrc').resolve()
+    zshrc       = path(f'{home_folder}/.zshrc').resolve()
 
     #zsh
-    if shell == '/bin/zsh' and isfile(zshrc) == True:
+    if shell == '/bin/zsh' and zshrc.is_file():
         with open(zshrc, 'r+') as f:
             if pattern not in f.read():
                 f.write(pattern + f"{zshrc}'")
@@ -28,7 +27,7 @@ def set_alias(shell):
                 print("'j' is already an alias. You'll have to run the program "
                 'manually')
     #bash
-    elif shell == '/bin/bash' and isfile(bashrc) == True:
+    elif shell == '/bin/bash' and bashrc.is_file():
         with open(bashrc, 'r+') as f:
             if pattern not in f.read():
                 f.write(pattern + f"{bashrc}'")
@@ -53,7 +52,7 @@ pretty_date   = '%A, %e %B, %Y'
 today_date    = (datetime.now().strftime(pretty_date))
 
 # Create journal file if not already created & set alias if not existing.
-if isfile(journal_file) == False:
+if journal_file.is_file() == False:
     print('Journal file not found. Creating...')
     with open(journal_file, 'x') as f:
         f.write(f'# {today_date}')
@@ -61,7 +60,7 @@ if isfile(journal_file) == False:
     set_alias(find_shell)
 
 # Get today's date & compare it to the last mod date of journal_file
-mod_date      = datetime.fromtimestamp(getmtime(journal_file)).strftime(pretty_date)
+mod_date      = datetime.fromtimestamp(journal_file.stat().st_mtime).strftime(pretty_date)
 if today_date == mod_date:
     print("Continuing today's entry...")
     open_in_pref_editor()
