@@ -44,7 +44,10 @@ def set_alias(shell):
 def open_in_pref_editor():
     pref_editor = environ.get('EDITOR')
     if environ.get('EDITOR') == None:
-        system(f'nvim + {journal_file}')
+        try:
+            system(f'nvim + {journal_file}')
+        except:
+            print(f"could not open {journal_file} using editor")
     else:
         system(pref_editor + journal_file)
 
